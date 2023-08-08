@@ -1,0 +1,386 @@
+﻿//---------------------------Mouse Functions--------------------------
+//As you've probably guessed, this .dic file has to do with mouse functions. This includes the petting feature and what happens when you double click your ghost.
+
+
+//--OnMouseMove
+//This is a bunch of code determining who the mouse is over. Don't touch any of it.
+
+OnMouseMove
+ {
+		//---- reference3 determines the character in question
+		if reference3 == 0 //if the character is 0, aka the main character
+		{
+			//---- it will run the mouse functions for that character
+			MouseMoveSakura
+		}
+		else //if the character isn't 0, then it must be the side character.
+		{
+			//---- this will run the mouse functions for the side character.
+			MouseMoveKero
+		}
+ }
+ 
+ //*********************Advanced User Info*******************************
+//If you want to have more than two characters at any point, like for example how I added Charger with my Hunter/Smoker ghost, and you want to be able to interact with that character like you can with the others, you will have to add in that character to OnMouseMove above. You'll need to know the p[] you've assigned your third character to, which in Charger's case was 3. You can assign your third character any p you want, just be consistent about using the same p[] everytime. I touch on \p a bit more in the walkthrough.
+//So anyway, as you can see above, OnMouseMove determines who the user is touching, so you'll just have to add in an elseif checking for reference3 == 3, or reference3 == 4, or whatever p number is you're using. After that, you'll just need to copy and paste the other mouse functions below and change the name as you need (for example, MouseMoveCharger, MouseDoubleClickCharger). 
+
+//Note though that the extra character will not be a hard-coded character like 0 and 1! You're basically tricking the program into thinking there's another character, and some functions in things like menu.dic and aitalk.dic won't work quite right if you put in a value other than 0 or 1, and you'll need to be careful about making sure to remove the third character when you're done. But luckily for you, this won't be a problem with any of the mouse functions as far as I'm aware, and you can fill them out for the third character just like you would for the two main ones.
+//***********************************************************************
+
+
+ //--MouseMoveSakura
+ //The petting function for your main character.
+ 
+MouseMoveSakura
+ {
+	if reference4 != "" //ignore
+ 	{
+ 		stroke++ //if you move the mouse over the right areas, the stroke count will go up.
+ 		if stroke >= 40 //if the stroke count is above a certain number, the petting dialogue will kick in. You can change this number to make the petting take longer or shorter if you want. FLELEs have it set to 50 for some reason, which makes it take longer than this.
+		{
+ 			stroke = 0 //resetting the stroke count
+			if reference4 == "Head" //This is where you'd put in the name of your collision, such as head, face, horns, tail, ears, whatever.
+ 			{
+				""
+ 			}
+ 			elseif reference4 == "Face"
+ 			{
+ 				""
+ 			}
+			
+ 		}
+	}
+ 	else
+	{
+ 		// If the mouse isn't over the ghost, it'll zero out the stroke value.
+		stroke = 0
+ 	}
+}
+
+ //---- MouseMoveKero -----------------------------------------------------------------
+ //MouseMoveKero is exactly like the above, except set up for your second character. 
+ 
+MouseMoveKero
+ {
+	if reference4 != ""
+ 	{
+ 		stroke++
+ 		if stroke >= 40
+		{
+			stroke = 0
+			if reference4 == "Face"
+ 			{
+				""
+ 			}
+			elseif reference4 == "Point"
+			{
+				""
+			}	
+ 		}
+	}
+ 	else
+	{
+ 		// If the mouse isn't over the ghost, it'll zero out the stroke value.
+		stroke = 0
+ 	}
+}
+
+//---- OnMouseDoubleClick -------------------------------------------------------
+//This is set up much like OnMouseMove above, except this is checking to see if the user is double clicking on the ghost.
+
+OnMouseDoubleClick
+ {
+	//---- like with the OnMouseMove function above, this determines who the user is clicking on.
+	if reference5 == 0 //checks which button is being used for the click
+	{
+	 	if reference3 == 0 //if the character is 0, aka your main character
+		{
+		MouseDoubleClickSakura
+		}
+		else
+		{
+ 		MouseDoubleClickKero
+		}
+	}
+ }
+
+ //---- MouseDoubleClickSakura ----------------------------------------------------------
+ //Like the petting animation above, this is the reactions they have to being double clicked.
+ 
+ 
+MouseDoubleClickSakura
+ {
+	if reference4 == "11" || reference4 == "12" || reference4 == "13" || reference4 == "14" || reference4 == "15" || reference4 == "21" || reference4 == "22" || reference4 == "23" || reference4 == "24" || reference4 == "25" || reference4 == "31" || reference4 == "32" || reference4 == "33" || reference4 == "34" || reference4 == "35" || reference4 == "41" || reference4 == "42" || reference4 == "43" || reference4 == "44" || reference4 == "45" || reference4 == "51" || reference4 == "52" || reference4 == "53" || reference4 == "54" || reference4 == "55"
+	{
+	"\0* (Would you like to buy "
+    --
+ 	if reference4 == "11"
+	{
+		tempbought = 11
+		"Wacky Wafers"
+ 	}
+	elseif reference4 == "12"
+	{
+		tempbought = 12
+		"Munchy Bloomers"
+ 	}
+	elseif reference4 == "13"
+	{
+		tempbought = 13
+		"Prawn Crackers"
+ 	}
+	elseif reference4 == "14"
+	{
+		tempbought = 14
+		"Cheesy Chunks"
+ 	}
+	elseif reference4 == "15"
+	{
+		tempbought = 15
+		"Mixed Nuts"
+ 	}
+	
+	elseif reference4 == "21"
+	{
+		tempbought = 21
+		"Green Devils"
+ 	}
+	elseif reference4 == "22"
+	{
+		tempbought = 22
+		"Assorted Dried Fruits"
+ 	}
+	elseif reference4 == "23"
+	{
+		tempbought = 23
+		"Flaming Hot Sunrise"
+ 	}
+	elseif reference4 == "24"
+	{
+		tempbought = 24
+		"Blueberry Buzzers"
+ 	}
+	elseif reference4 == "25"
+	{
+		tempbought = 25
+		"Almond Fluffs"
+ 	}
+	
+	elseif reference4 == "31"
+	{
+		tempbought = 31
+		"Forest Crunch"
+ 	}
+	elseif reference4 == "32"
+	{
+		tempbought = 32
+		"Apple Arrows"
+ 	}
+	elseif reference4 == "33"
+	{
+		tempbought = 33
+		"Lemonade Joy"
+ 	}
+	elseif reference4 == "34"
+	{
+		tempbought = 34
+		"Cheeky Chuckler"
+ 	}
+	elseif reference4 == "35"
+	{
+		tempbought = 35
+		"Green Apple Jabbers"
+ 	}
+	
+	elseif reference4 == "41"
+	{
+		tempbought = 41
+		"Red Hot Dream"
+ 	}
+	elseif reference4 == "42"
+	{
+		tempbought = 42
+		"Temperature Tantrum"
+ 	}
+	elseif reference4 == "43"
+	{
+		tempbought = 43
+		"Tropical Thrill"
+ 	}
+	elseif reference4 == "44"
+	{
+		tempbought = 44
+		"Cream 'n' Coconut"
+ 	}
+	elseif reference4 == "45"
+	{
+		tempbought = 45
+		"Razzberry Whip"
+ 	}
+	
+	elseif reference4 == "51"
+	{
+		tempbought = 51
+		"Vanilla Blast"
+ 	}
+	elseif reference4 == "52"
+	{
+		tempbought = 52
+		"Cherry Surge"
+ 	}
+	elseif reference4 == "53"
+	{
+		tempbought = 53
+		"Grape Tornado"
+ 	}
+	elseif reference4 == "54"
+	{
+		tempbought = 54
+		"Golden Guzzler"
+ 	}
+	elseif reference4 == "55"
+	{
+		tempbought = 55
+		"Blueberry Bash"
+ 	}
+	--
+	".)\n\n\![*]\q[Yes,Yesbuy]\n/
+	\![*]\q[No,CLOSEMENU]\n"
+	}
+ }
+ 
+ Select.Yesbuy
+ {
+	if tempbought == "11"
+	{
+		bought11 += 1
+ 	}
+	elseif tempbought == "12"
+	{
+		bought12 += 1
+ 	}
+	elseif tempbought == "13"
+	{
+		bought13 += 1
+ 	}
+	elseif tempbought == "14"
+	{
+		bought14 += 1
+ 	}
+	elseif tempbought == "15"
+	{
+		bought15 += 1
+ 	}
+	
+	elseif tempbought == "21"
+	{
+		bought21 += 1
+ 	}
+	elseif tempbought == "22"
+	{
+		bought22 += 1
+ 	}
+	elseif tempbought == "23"
+	{
+		bought23 += 1
+ 	}
+	elseif tempbought == "24"
+	{
+		bought24 += 1
+ 	}
+	elseif tempbought == "25"
+	{
+		bought25 += 1
+ 	}
+	
+	elseif tempbought == "31"
+	{
+		bought31 += 1
+ 	}
+	elseif tempbought == "32"
+	{
+		bought32 += 1
+ 	}
+	elseif tempbought == "33"
+	{
+		bought33 += 1
+ 	}
+	elseif tempbought == "34"
+	{
+		bought34 += 1
+ 	}
+	elseif tempbought == "35"
+	{
+		bought35 += 1
+ 	}
+	
+	elseif tempbought == "41"
+	{
+		bought41 += 1
+ 	}
+	elseif tempbought == "42"
+	{
+		bought42 += 1
+ 	}
+	elseif tempbought == "43"
+	{
+		bought43 += 1
+ 	}
+	elseif tempbought == "44"
+	{
+		bought44 += 1
+ 	}
+	elseif tempbought == "45"
+	{
+		bought45 += 1
+ 	}
+	
+	elseif tempbought == "51"
+	{
+		bought51 += 1
+ 	}
+	elseif tempbought == "52"
+	{
+		bought52 += 1
+ 	}
+	elseif tempbought == "53"
+	{
+		bought53 += 1
+ 	}
+	elseif tempbought == "54"
+	{
+		bought54 += 1
+ 	}
+	elseif tempbought == "55"
+	{
+		bought55 += 1
+ 	}
+	--
+	tempbought = 0
+	--
+	"\0* (The vending machine spits out the item. It is accessible from your backpack.)"
+ }
+ 
+ Select.CLOSEMENU
+ {
+	tempbought = 0
+ }
+ 
+ //---- MouseDoubleClickKero -----------------------------------------------------------
+ //This is just the same as MouseDoubleClickSakura above, except for your secondary character.
+ 
+MouseDoubleClickKero
+ {
+ 	if reference4 == "Face"
+	{
+		OpenKeroMenu
+ 	}
+	else //Otherwise if you click anywhere else on Triangle's body
+ 	{
+		OpenKeroMenu //This will open his menu set up in menu.dic.
+	}
+ }
+
+ //*********************Advanced User Info*******************************
+ //There are other mouse related functions you could set up much like the above, such as OnMouseDragStart, OnMouseDragEnd, OnMouseWheel, and others which correspond to various things you can do with your mouse. You can probably guess what those functions do just by their names - OnMouseWheel would be if someone spun their mouse wheel over a certain area, for example. If you're interested in these, I'd recommend doing some reading at the CROW-SSP Encyclopedia to get a better idea of them and settle down for some trial and error learning as you try to put them in.
+ //***********************************************************************

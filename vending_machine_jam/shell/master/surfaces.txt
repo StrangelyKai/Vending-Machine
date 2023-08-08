@@ -1,0 +1,177 @@
+//---------------------------Surfaces.txt--------------------------
+//Surfaces.txt is the backbone of the shell you make for your ghost. 
+
+//MAKE SURE ALL YOUR IMAGES ARE THE SAME SIZE. The image dimensions just need to be consistent throughout for each character, because believe me, it will make things MUCH, MUCH easier for you from this point on if you do that.
+
+//ONE MORE NOTE - If you are planning on doing a single person ghost without a sidekick character at all, all you have to do is save a blank png over all the files for the secondary character, ESPECIALLY Surface10.png. Don't delete Surface10.png or Surface10 in general.
+
+
+
+//--The Main Character's Poses---------------------------------------------------------
+
+surface0
+//surface0 is the basic default pose for your main character.
+{
+collision0,156,135,187,164,11
+collision1,185,138,216,166,12
+collision2,211,137,245,166,13
+collision3,244,141,271,165,14
+collision4,268,139,296,165,15
+
+collision5,153,181,185,216,21
+collision6,181,181,212,215,22
+collision7,213,184,243,215,23
+collision8,238,185,272,214,24
+collision9,266,183,295,215,25
+
+collision10,154,224,182,260,31
+collision11,187,226,212,260,32
+collision12,218,226,241,259,33
+collision13,246,227,268,260,34
+collision14,270,226,294,260,35
+
+collision15,158,267,184,301,41
+collision16,190,269,210,300,42
+collision17,220,269,241,303,43
+collision18,248,267,268,301,44
+collision19,274,268,294,302,45
+
+collision20,161,305,182,340,51
+collision21,187,305,211,343,52
+collision22,218,306,242,341,53
+collision23,247,306,269,341,54
+collision24,270,305,295,343,55
+
+//Collisions define "hot spots" on your ghost where the user can pet or double click them (as defined in mouse.dic).
+//The four numbers after that are x/y coordinates. Specifically, the first two numbers are the x/y coordinates of the TOP LEFT corner of your hotspot. The third and fourth numbers are the coordinates of the BOTTOM RIGHT corner of the hotspot.
+//After that, you have to name the area you highlighted. In collision0's case, the area is named "Head". If you go into mouse.dic, you'll see that this name is referenced when the mouse is over that area or interacting with it.
+
+//Collisions only apply to the Surface they're in, unless they're appended using surface.append at the bottom of this file. 
+
+element0,overlay,surface0.png,0,0
+
+
+//*********************Advanced User Info*******************************
+//An element doesn't need to be the first frame of an animation, it can also be the last one. This can come in handy for certain animations that only run once.
+//***********************************************************************
+
+
+//IMPORTANT NOTE: IF YOU'RE DOING A PROFILE VIEW AND YOUR MOUTH IS MOVING OUTSIDE THE BODY then you're going to need to use Replace instead. I'm sorry for your loss.
+}
+
+//--The Side Character's poses------------------
+
+surface10
+{
+
+element0,overlay,surface10.png,0,0
+
+}
+
+
+//--surface.append-------------------------------------------------------------------
+//Surface.append basically applies the coding within the brackets to the poses specified in the number range. Specifically in this case it applies to collisions. If the collision areas for your ghost don't change very much from pose to pose, then you can set them here for multiple surfaces at once and save yourself some time.
+
+//Make sure to put surface.append at the end of your file, so it can append the values to surfaces that exist.
+
+//--bind-------------------------------------------------------------------------------
+
+//Bind is an interval function only used for dress-up items, therefore if your ghost has no dress-up items, you will not need to bind anything and can safely disregard this. See the walkthrough page about clothing for more details about bind.
+
+//51interval,bind
+//51pattern0,999,2,add,0,0
+
+//One final note on bind, note that it is also under surface.append along with the collisions up there. Meaning that this clothing would bind across those multiple surfaces just like the collisions.
+
+//You can use surface.append to technically apply anything across multiple poses, I'm pretty sure... even images. I haven't messed with this too much myself, but I'm pretty sure it's possible.
+
+
+
+//--Unique Collision cursors------------------
+
+//sakura.cursor 
+//{ 
+//mouseup0,Head,system:hand 
+//mousedown0,Head,system:finger 
+//mouseup1,Face,system:hand 
+//mousedown1,Face,system:grip 
+//} 
+
+//What this does is change the mouse cursor. You can see it's split into mouseup and mousedown, and it uses the names you gave your Collisions up there. So when the mouse is hovering over Girl's head, it uses the system cursor that looks like a hand. When you click and hold, it looks like a finger. You can keep adding unique cursors for all your collisions by sequentially numbering them, like mouseup/down2, mouseup/down3, and so on.
+
+//The system cursors you can use for this are "arrow", "cross", "no", "hand", "grip", "finger", "wait", "text", "move", and "help".
+
+//To set this up for the secondary character, just change sakura to kero, as usual.
+
+
+//--Tooltips------------------
+
+//Maybe you'd like a tooltip to pop up when your user is hovering over a hitbox on your ghost. It works much the same as above!
+
+sakura.tooltips 
+{ 
+11,Wacky Wafers
+12,Munchy Bloomers
+13,Prawn Crackers
+14,Cheesy Chunks
+15,Mixed Nuts
+
+21,Green Devils
+22,Assorted Dried Fruits
+23,Flaming Hot Sunrise
+24,Blueberry Buzzers
+25,Almond Fluffs
+
+31,Forest Crunch
+32,Apple Arrows
+33,Lemonade Joy
+34,Cheeky Chuckler
+35,Green Apple Jabbers
+
+41,Red Hot Dream
+42,Temperature Tantrum
+43,Tropical Thrill
+44,Cream 'n' Coconut
+45,Razzberry Whip
+
+51,Vanilla Blast
+52,Cherry Surge
+53,Grape Tornado
+54,Golden Guzzler
+55,Blueberry Bash
+}
+
+//Basically put the name of your collision first, then what you want the tooltip to say.
+//Like above, replace sakura with kero for the secondary character.
+
+
+
+//--Surface.alias------------------
+
+
+//There is another function along the same lines of surface.append and it's surface.alias. What it does is assign a range of numbers to a single number or word that can be called using \s[].
+
+//sakura.surface.alias
+//{
+//6666,[1229,1230,1231,1235]
+//}
+
+//What this means is that I could then go \s[6666] in dialogue and it would call any of these four Surfaces in the brackets. You can do words as well, like creepy,[1229,1230,1231,1235], and then you could call it with \s[creepy]. This may sound like a convenient shortcut to using words instead of numbers for your ghost's expressions, but I'd probably stick with numbers, really. It just feels like it'd backfire on you eventually.
+//You can do the same thing with the side character by using kero instead of sakura.
+
+//kero.surface.alias
+//{
+//6667,[1228,1232,1233]
+//6668,[1228,1232,1233,1234]
+//}
+//And as you can see, you can have multiple surface aliases set up at any point. In this example, kero has both 6667 and 6668 defined as a range of Surfaces. So \s[6667] would call one of those three Surfaces, and \s[6668] would call one of those four Surfaces.
+
+//---
+
+
+
+//*********************More on SERIKO coding*******************************
+
+//You can read about these on the SERIKO page on the walkthrough as well with (presumably) easier formatting on the eyes lol. Actually since this is supposed to be trimmed down I'm just going to cut the whole thing and tell you to go to the seriko page on the site.
+
+//***********************************************************************

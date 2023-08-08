@@ -1,0 +1,393 @@
+﻿//---------------------------Miscellaneous Functions--------------------------
+
+//This .dic file is concerned with a number of functions that didn't quite fit in anywhere else.
+
+/*
+This file has...
+
+OnFileDrop2
+OnInstallBegin
+OnInstallComplete
+OnInstallFailure
+OnInstallRefuse
+OnVanishSelecting
+OnVanishSelected
+OnVanishCancel
+OnVanishButtonHold
+OnVanished
+OnBIFFBegin
+OnBIFFComplete
+OnBIFFFailure
+OnUpdateBegin
+OnUpdateReady
+OnUpdateComplete
+OnUpdateFailure
+OnUpdate.OnDownloadBegin
+OnUpdate.OnMD5CompareBegin
+OnUpdate.OnMD5CompareComplete
+OnUpdate.OnMD5CompareFailure
+OnHeadlinesenseBegin
+OnHeadlinesense.OnFind
+Select.Headline_Cancel
+OnHeadlinesenseComplete
+OnHeadlinesenseFailure
+OnUpdatedataCreating
+OnUpdatedataCreated
+OnNarCreating
+OnNarCreated
+OnSNTPBegin
+OnSNTPCompare
+OnSNTPEXECUTE
+OnSNTPCANCEL
+OnSNTPFailure
+OnDisplayChange
+OnScreenSaverStart
+OnScreenSaverEnd
+OnApplicationBoot
+OnApplicationClose
+OnApplicationFileOpen
+OnBatteryLow
+OnBatteryCritical
+OnShellScaling
+*/
+
+
+ //---- OnInstallBegin -------------------------------------------------------
+ //OnInstallBegin is called when a file with an included install.txt is dropped on your ghost. This primarily means things like .nar files for other ghosts or .zip files containing balloons or shells for your ghosts. Primarily ghost-related things.
+ 
+OnInstallBegin
+ {
+	"\0\s[0]* (This zip or nar contains an install.txt file.)\e"
+ }
+
+ //---- OnInstallComplete -------------------------------------------------------
+ //OnInstallComplete runs once the file above has finished installing.
+ 
+OnInstallComplete
+ {
+	"\0"
+ 	--
+	if reference0 == "ghost" //if the type of the file they're installing is a ghost.
+ 	{
+		"\s[0]* (A new ghost called %(reference1) has been installed.)\e"
+		//Reference1 here would be the name of the ghost.
+ 	}
+	elseif reference0 == "balloon" //if the type of file is a balloon
+ 	{
+		"\s[0]* (A new balloon called %(reference1) has been installed.)\e"
+		//Reference1 here would be the name of the balloon.
+ 	}
+	elseif reference0 == "plugin" //if the type of file is a plug-in, like a saori of some kind.
+ 	{
+		"\s[0]* (A new plugin called %(reference1) has been installed.)\e"
+		//Reference1 here would be the name of the plug-in.
+ 	}
+	elseif reference0 == "calendar skin" //if the type of file is a calendar skin
+	{
+		"\s[0]* (A new calendar skin called %(reference1) has been installed.)"
+	}
+	elseif reference0 == "headline" //if the file/url you drop on them is counted as a headline. To be honest with you I don't know what determines whether a url is a headline or what.
+	{
+		"\0\s[0]* (A new headline called %(reference1) has been set up.)\e"
+	}
+	elseif reference0 == "rss" //this is more clearly for when you drag an rss feed onto your ghost.
+	{
+		"\0\s[0]* (A new rss called %(reference1) has been set up.)\e"
+	}
+	else //for any other file they'd install
+	{
+		"\s[0] * (%(reference1) has been installed.)"
+	}
+}
+
+//---- OnInstallFailure -------------------------------------------------------
+//If the file you dropped fails to install for one reason or another.
+
+OnInstallFailure
+ {
+	"\0\s[0]* (The installation has failed.)\n\n[half]\w5"
+	--
+	if reference0 == "unsupported" //These if statements determine how it happened to finish the piece of dialogue. This checks if the reason it failed is because it was unsupported.
+	{
+	"'This file is unsupported.'\e"
+	}	
+	elseif reference0 == "extraction" //This checks if the file didn't extract properly.
+	{
+	"'The file could not be extracted properly.'\e"
+	}
+ }
+ 
+ //--OnInstallRefuse
+ //If the file you dropped can't be installed with this ghost.
+ 
+OnInstallRefuse
+ {
+	"\0\s[0]* (This file cannot be installed.\w8\nTry %(reference0) instead.)\e"
+	
+	//reference0 in this function refers to the ghost this file is associated with, probably the name of the ghost listed in its install.txt file. You would see this if you dropped a shell made for a different ghost on your current ghost, for example.
+ }
+
+
+//**** Uninstallation ******************************************
+//You may have noticed in the configuration menus in menu.dic an option to turn Uninstall on or off, as well as a greyed out option to uninstall in the right click menu.
+
+//--OnVanishSelecting
+//When you select the uninstall option in the menu.
+
+OnVanishSelecting
+{
+	"\0\s[0]* (Would you like to uninstall the vending machine?)\e"
+}
+
+//OnVanishSelected
+//When you decide to uninstall them. 
+
+OnVanishSelected
+{
+	"\0\s[0]* (Uninstalling...)\w8\e"
+}
+
+
+//--OnVanishCancel
+//If you select Uninstall from the menu, but decide not to do it.
+
+OnVanishCancel
+{
+	"\0\s[0]* (The uninstalling process has been suspended.)\e"
+}
+
+//--OnVanishButtonHold
+//This should trigger if you double click the ghost's balloon in the middle of OnVanishSelected above. So it basically cancels their uninstallation. I'd be pretty careful about testing this, and I'd probably just put the line of dialogue into their script input and test it that way instead.
+
+OnVanishButtonHold
+{
+	"\0\s[0]* (The uninstalling process has been suspended.)\e"
+}
+
+
+ //---- OnVanished -----------------------------------------
+ //OnVanished is a weird little function. Basically, if you uninstall a ghost, it'll automatically go back to the last ghost you were using. They'll then say this line of dialogue about the ghost you just uninstalled. Make sure to set up both their poses immediately so they both appear when it switches back to them.
+ 
+OnVanished
+ {
+	"\1\s[10]\0\s[0]* (%(reference0) has been uninstalled.)\e"
+	
+	//reference0 here is the name of the other ghost.
+}
+
+
+
+
+ //**** Network Update *****************************************************************
+ //The following functions are for the Network Update of your ghost, where it will connect to your website, check for new files, and update itself.
+ 
+ //You can easily test these messages using the Developer panel. Go to Open at the bottom of it and choose one of the four Update Event options to simulate a Ghost's update process.
+ 
+ //---- OnUpdateBegin -------------------------------------------------------------
+ //When you first tell your ghost to update. Note that they end with \w8 to give a little breather time.
+ 
+OnUpdateBegin
+ {
+	"\0\s[0]* (Starting the update process.)\w8\e"
+ }
+
+ //---- OnUpdateReady ---------------------------------------------------------
+ //If the ghost finds new files to update with.
+ 
+OnUpdateReady
+ {
+ 
+	reference0++ //makes sure it starts at 1 instead of 0
+	
+    "\0\s[0]* (There are %(reference0) new files.)\w8\e"
+	
+	//reference0 here storing the number of new files. You don't have to use it if you don't want to.
+ }
+
+
+//---- OnUpdateComplete -------------------------------------------------------------
+//When the ghost has finished the update process.
+
+OnUpdateComplete
+ {
+	if reference0 == "none" //if the ghost had nothing to update with
+ 	{
+ 		"\0\s[0]* (There are no new files.)\e"
+	}
+ 	else //if the ghost has updated successfully
+	{
+		"\0\s[0]* (Update successful!)\e"
+ 	}
+}
+
+ //---- OnUpdateFailure -------------------------------------------------------------
+ //Error messages if the update process fails in some way.
+ 
+OnUpdateFailure
+ {
+	if reference0 == "timeout" //if the connection times out
+ 	{
+ 		"\0\s[0]* (The update connection has timed out.)\e"
+	}
+ 	elseif reference0 == "md5 miss" //This is the final message displayed when you've run into an md5 error below at some point.
+	{
+		"\0\s[0]* (The MD5 hash of the files don't match.)\e"
+ 	}
+	else //for other errors
+ 	{
+ 		"\0\s[0]* (The update could not be completed.\w8\0\s[0]The error is '%(reference0)'.)\e"
+	}
+ }
+
+
+ //---- OnUpdate.OnDownloadBegin ------------------------------------------------
+ //This dialogue sets up the cool progress bar. I think it's real neat and since I plan on using this trimmed down version I'm keeping it in here.
+ 
+ //reference0 - file being downloaded
+ //reference1 - number of file being downloaded, as in "this is file 1 out of 9"
+ //reference2 - overall number of files to download, counting zero. so if there are ten files, it'll display as 9.
+ //reference3 - what's being updated - ghost, shell, balloon, plugin, headline, baseware
+
+ //Big thanks to Malakin for helping me figure it out.
+ 
+ 
+//---- Downloading the update ------------------------------------------------
+OnUpdate.OnDownloadBegin
+ {
+	 "\_q\b[2]* (Downloading %(reference0)...)\n\n"
+		 --
+		 //okay, you can use the %(reference) envelope here to display the value, but you can't actually DO anything with it as is. You have to convert it into an integer using TOINT, THEN you can use it in functions and such. I should get back to that one person trying to do that whack a mole game with this info, this was the exact same problem they ran into.
+		 //+ 1 because otherwise the count starts at 0 and it looks weird. Basic format is variablename = TOINT(target you're turning into an integer, in this case the references)
+		 
+		Update_Process = TOINT(reference1) + 1
+		Update_Total = TOINT(reference2) + 1
+		Update_Remaining = Update_Total - Update_Process
+		
+		//defining starting points
+		PointA = 1 
+		PointB = 1
+		
+		//defining text buffers beforehand, otherwise they don't display right
+		_txt = ""
+		
+		//loop calculates how many check boxes to display based on the variables above, the if check is for displaying the ascii border on the sides
+		while PointA <= Update_Process 
+		{
+		_txt += "☑" 
+		PointA++ 
+		} 
+		//see above except for blank boxes
+		while PointB <= Update_Remaining 
+		{
+		_txt += "☐" 
+		PointB++ 
+		}
+		--
+		//using the text buffers to display the correct number of boxes
+		"%(_txt)\n\n%(Update_Process) of %(Update_Total)"
+		--
+		//flavortext - i don't want to lose this, i hope there's a way i can keep all of it
+		
+		 	if "aitalk" _in_ reference0 //this is checking to see what kind of files are being downloaded. In this case, it's looking for files called aitalk in the download queue.
+			{
+				""
+			}
+			else //for files not specified above
+			{
+			""
+			} 
+		
+		--
+		"\w5\e"
+ }
+
+ //---- OnUpdate.OnMD5CompareBegin ---------------------------------------------------
+ //This checks the hash value of the files in the directory and the files listed in updates.dau, I believe.
+ 
+OnUpdate.OnMD5CompareBegin
+ {
+	//"\1\s[10]Checking the MD5 value.\e"
+ }
+
+ //---- OnUpdate.OnMD5CompareComplete --------------------------------------------------
+ //After they've checked the MD5 value and it matches.
+ 
+OnUpdate.OnMD5CompareComplete
+ {
+	//"\0\s[0]MD5 check good.\e"
+}
+
+ //---- OnUpdate.OnMD5CompareFailure ---------------------------------------------------
+ //If the MD5 values don't match, meaning if the file is missing or damaged or incomplete in some way.
+ 
+OnUpdate.OnMD5CompareFailure
+ {
+	"\0\s[0]* (The MD5 values don't match.)\w8\e"
+ }
+
+//**** Ghost Creation and Updating ******************************************************
+//These next few are related to creating updates2.dau and .nar files for your ghosts.
+
+
+ //---- OnUpdatedataCreating -----------------------------------------------------------
+ //This will begin the creation of the updates2.dau file.
+ 
+OnUpdatedataCreating
+ {
+	"\1\s[10]* (Creating the updates2.dau file.)\e"
+ }
+
+ //---- OnUpdatedataCreated -------------------------------------------------------------
+ //After the updates2.dau file has been successfully created.
+ 
+OnUpdatedataCreated
+ {
+	"\0\s[0]* (Successfully created updates2.dau.)\e"
+ }
+
+ //---- OnNarCreating ------------------------------------------------------------------
+ //Along the same lines, this is when they begin creating a .nar file for your ghost.
+ 
+OnNarCreating
+ {
+	"\0\s[0]* (Creating the .nar file.)\e"
+ }
+
+ //---- OnNarCreated -------------------------------------------------------------------
+ //After the nar file has been successfully created.
+ 
+OnNarCreated
+ {
+	"\0\s[0]* (Successfully created '%(reference0)'.)\e"
+	//reference0 here will be the filename of the nar you just created. It should drop the nar in the folder where all your ghosts are listed, ssp\ghost\.
+ }
+
+ //--OnDisplayChange----------------------------------------------------------------
+ //This is when you change the resolution of your monitor while your ghost is running.
+ 
+OnDisplayChange
+ {
+	displaybpp    = reference0
+ 	displaywidth  = reference1
+	displayheight = reference2
+ }
+
+ 
+ //--OnShellScaling
+ //If you right click the ghost, you can go to Shell Scaling, which lists a number of different percentages. Those are the percentages your ghost can be scaled in size up or down.
+ 
+OnShellScaling
+{
+	if reference0 >= 150 //this number is the percentage that you're scaling the ghost up to. In this case, it's 150%.
+	{
+		""
+	}
+	elseif reference0 == 100 //this is 100%
+	{
+		""
+	}
+	elseif reference0 == 50 //this is 50%.
+	{
+		""
+	}
+}

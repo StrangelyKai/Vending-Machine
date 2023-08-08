@@ -1,0 +1,1014 @@
+﻿//---------------------------Menus--------------------------
+//This .dic file is primarily concerned with the double-click menus for each of your ghosts.
+
+//Functions in this file
+
+//OpenSakuraMenu
+//MenuRun
+//OnLastTalk
+//GetWeekDay
+//GetAP
+//Select.BACKTOMENU
+//Select.configmenu
+//TalkConfig
+//Pronoun stuff
+//Delete on/off
+//Bithday stuff
+//Talk Rate
+
+//--OpenSakuraMenu
+//This is a bit of intro dialogue before the main character opens their menu.
+//The \b2 tag tells the ghost to use their big balloon for this dialogue.
+//If you don't want multiple responses before opening the menu, you can delete the dialogue and just leave MenuRun.
+
+OpenSakuraMenu
+{
+		// "\b2"
+		// --
+		// MenuRun
+}
+
+//--MenuRun
+//As you just saw above. This actually fills out the rest of the menu.
+
+MenuRun
+ {	
+ 	wd = GetWeekDay
+ 	ap = GetAP
+	//These four statements basically get the day of the week, whether it's AM or PM, the hour, and the time. It's putting together the information to display the time at the bottom of the balloon.
+	--
+	"\n\n\_q\b2" //\_q means quick session, meaning all the text from this point on will display instantly instead of a few letters at a time like normal ghost dialogue.
+	--
+	if lastTalk != ""
+	{
+	  "\![*]\q[Repeat Last Dialogue,OnLastTalk]\n\n[half]"
+	}
+	--
+ 	"\![*]\q[Say something,OnAiTalk]\n"
+	"\![*]\q[Say something 2,OnAiTalk]\n"
+	
+	//This option will force the ghost to say something from aitalk if the user clicks it.
+	--
+	"\![*]\q[Config Menu,configmenu]\n/
+	\![*]\q[Functions,dosomething]\n\n[half]/
+ 	\![*]\q[Nevermind,CANCEL]\n\n\n[half]%(wd) %(nowhour):%(nowmin) %(ap), %(month)/%(day)/%(year)\e"
+}
+
+//Leave this alone
+OnLastTalk 
+{
+"%(lastTalk)\e"
+}
+
+//This is figuring out what day of the week it is. Leave it alone.
+GetWeekDay
+{
+	if weekday == 0
+	{"Sun"}
+	elseif weekday == 1
+	{"Mon"}
+	elseif weekday == 2
+	{"Tue"}
+	elseif weekday == 3
+	{"Wed"}
+	elseif weekday == 4
+	{"Thu"}
+	elseif weekday == 5
+	{"Fri"}
+	else
+	{"Sat"}
+}
+
+//This is finding out whether it's AM or PM. Leave it alone.
+GetAP
+{
+ 	if hour >= 0 && hour <= 11
+ 		{"AM"}
+ 	else
+ 		{"PM"}
+}
+
+nowhour
+{
+	if hour12 == 0; "1"
+	else; "%(hour12)"
+}
+
+nowmin
+{
+	if minute >= 0 && minute <=9; "0%(minute)"
+	else; "%(minute)"
+}
+
+
+//If someone selects an option linked to BACKTOMENU, it will go back to MenuRun.
+Select.BACKTOMENU
+	{
+		MenuRun
+	}
+
+//If someone selects configmenu, this will lead to TalkConfig.
+Select.configmenu
+	{
+		TalkConfig
+	}
+
+//--TalkConfig
+//This menu allows the user to change their name and other information, as well as put in their birthday and change how often the ghost speaks.
+
+TalkConfig
+{
+	"\0\b[2]\_q\" 
+	//This bit of dialogue sets up a large balloon and a quick session, like above, so all the text will appear immediately.
+	--
+	"f[bold,1]Your name:\f[bold,0] %(username) \f[sup,1](\q[Change it?,TEACHNAME])\f[sup,0]\n"
+	--
+	"\f[bold,1]Your pronouns:\f[bold,0] %(heshe)/%(himher)/%(hisher) \f[sup,1](\q[Change them?,TEACHPRONOUN])\f[sup,0]\n"
+	--
+	"\f[bold,1]Your birthday:\f[bold,0] %(birthdayprint) \f[sup,1](\q[Change it?,TEACHBDAY])\f[sup,0]\n\n"
+	--
+	//"\f[bold,1]Talk Rate:\f[bold,0] - every %(talktime) \f[sup,1](\q[Change it,talkinter])\f[sup,0]\n\n"
+	--		
+		{
+		"\![*]Enable Uninstall? (NOW : %(deleteshitai))\n\q[ON,deleteon] \q[OFF,deleteoff]\n\n[half]\n"
+		}
+	--
+	"\![*]\q[Back to the menu,BACKTOMENU]\e"
+}
+
+//This and the next few set up the pronouns, as you can see by the linkedfunction names.
+
+Select.TEACHPRONOUN
+{
+	"\0\s[0]* (What pronouns do you use, consumer?)\w5\n\n[half]\_q/
+		\![*]\q[He-His-Him,choicemasc]\n/
+		\![*]\q[She-Her-Her,choicefem]\n/	
+		\![*]\q[They-Their-Them,choiceneither]\e"
+}
+
+Select.choicemasc
+{
+	presuffix = "masculine"
+	himher = "him"
+	heshe = "he"
+	hisher = "his"
+	hesshes = "he's"
+	--
+	"\0\s[0]* (Your pronouns are now he him and his.)\e"
+}
+
+Select.choicefem
+{
+	presuffix = "feminine"
+	himher = "her"
+	heshe = "she"
+	hisher = "her"
+	hesshes = "she's"
+	--
+	"\0\s[0]* (Your pronouns are now she her and her.)\e"
+}
+
+Select.choiceneither
+{
+	presuffix = "undefine"
+	himher = "them"
+	heshe = "they"
+	hisher = "their"
+	hesshes = "they're"
+	--
+	"\0\s[0]* (Your pronouns are now they them and their.)\e"
+}
+
+//Here are some examples of these envelopes in use.
+//"%(heshe) left that there."
+//"%(hisher) work is really cool."
+//"I'll ask %(himher) later."
+//"%(hesshes) really good at it."
+
+//These two options toggle whether or not you can delete your ghost. Leave them alone.
+
+Select.deleteon
+{
+	deleteshitai = "ON"
+	TalkConfig
+}
+
+Select.deleteoff
+{
+	deleteshitai = "OFF"
+	TalkConfig
+}
+
+
+//This next set of functions handles inputting the user's birthday.
+
+Select.TEACHBDAY
+	{	
+		"\0\s[0]* (What month were you born?)\![open,inputbox,OnUserBornMonth,-1]\e"
+		
+		//You can replace the dialogue up to the \![open,inputbox,OnUserBornMonth,-1] tag, leave that alone. You'll need the input box to get the information.
+	}
+
+//--OnUserBornMonth
+//This takes the value that the user put into the input box above and evaluates it. Most of this you won't have to touch, but I'll explain what it's doing anyway.
+
+OnUserBornMonth
+{
+	_tempmonth = TOSTR(reference0) //this stores what the user put in as a variable called _tempmonth
+	_tempmonth = TOLOWER(_tempmonth) //changes it to lowercase
+	
+	//this is attaching the right value to the input from the user
+	if _tempmonth == "january" || _tempmonth == "1" {bornmonth = 1; bornmonthprint = "January"}
+	elseif _tempmonth == "february" || _tempmonth == "2" {bornmonth = 2; bornmonthprint = "February"}
+	elseif _tempmonth == "march" || _tempmonth == "3" {bornmonth = 3; bornmonthprint = "March"}
+	elseif _tempmonth == "april" || _tempmonth == "4" {bornmonth = 4; bornmonthprint = "April"}
+	elseif _tempmonth == "may" || _tempmonth == "5" {bornmonth = 5; bornmonthprint = "May"}
+	elseif _tempmonth == "june" || _tempmonth == "6" {bornmonth = 6; bornmonthprint = "June"}
+	elseif _tempmonth == "july" || _tempmonth == "7" {bornmonth = 7; bornmonthprint = "July"}
+	elseif _tempmonth == "august" || _tempmonth == "8" {bornmonth = 8; bornmonthprint = "August"}
+	elseif _tempmonth == "september" || _tempmonth == "9" {bornmonth = 9; bornmonthprint = "September"}
+	elseif _tempmonth == "october" || _tempmonth == "10" {bornmonth = 10; bornmonthprint = "October"}
+	elseif _tempmonth == "november" || _tempmonth == "11" {bornmonth = 11; bornmonthprint = "November"}
+	elseif _tempmonth == "december" || _tempmonth == "12" {bornmonth = 12; bornmonthprint = "December"}
+	
+	else //if the month isn't a valid month, like 32 or something.
+	{
+			"\0\s[0]* (That's not a valid month. Try again.)"
+			--
+			"\![open,inputbox,OnUserBornMonth,-1]\![set,balloontimeout,-1]\e"
+	}
+	--
+	//If it's a valid month
+	
+	"\0\s[0]* (So you were born in %(bornmonthprint).\n\w8What day was it?)"
+	--
+	"\![open,inputbox,OnUserBornDay,-1]\![set,balloontimeout,-1]\e"
+	
+	//Here you can see the use of a bornmonthprint envelope to show the user what month they put in. Notice that it opens an inputbox at the end the same way the one above did.
+}
+
+//This adds an appropriate suffix to the number for the day. No need to mess with this.
+
+Printday
+{
+	if bornday == 1 || bornday == 21 || bornday == 31
+	{	"%(bornday)st"	}
+	elseif bornday == 2 || bornday == 22
+	{	"%(bornday)nd"	}
+	elseif bornday == 3 || bornday == 23
+	{	"%(bornday)rd"	}
+	else
+	{	"%(bornday)th"	}
+}	
+
+//--OnUserBornDay
+//This is much like the above function OnUserBornMonth. It'll take the value the user put in for the day and analyze it. 
+
+OnUserBornDay
+{
+	_tempday = reference0 //storing the input in _tempday
+	_tempday = TOLOWER(_tempday) //changes it to lowercase
+	_tempday = REPLACE(_tempday,"st","") //if the user types something like 2nd, 3rd, etc, this will make it just the number. It'll just add the suffix back later on the one that actually shows.
+	_tempday = REPLACE(_tempday,"nd","")
+	_tempday = REPLACE(_tempday,"rd","")
+	_tempday = REPLACE(_tempday,"th","")
+	_tempday = TOINT(_tempday) //Converts it to an integer
+	
+	if ((bornmonth == 1 || bornmonth == 3 || bornmonth == 5 || bornmonth == 7 || bornmonth == 8 || bornmonth == 10 || bornmonth == 12) && _tempday >= 1 && _tempday <= 31) || (bornmonth == 2 && _tempday >= 1 && _tempday <= 29) || ((bornmonth == 4 || bornmonth == 6 || bornmonth == 9 || bornmonth == 11) && _tempday >= 1 && _tempday <= 30) //This ugly function checks if the day falls into a valid range. If it does, we set some variables and continue down.
+	{
+		bornday = _tempday
+		borndayprint = Printday
+		userbirthday = "%(bornmonth)month %(bornday)day"
+		birthdayprint = "%(bornmonthprint) %(borndayprint)"
+		
+		"%(birthchecked)"
+		//Mostly defining envelopes and values in here. Eagle-eyed readers will notice the new envelope birthchecked on its own line like a tiny king.
+	}
+	else //If the day isn't valid, like the 10046th or something, this will open the input box again and have a \e so the dialogue below doesn't play.
+	{
+		"\0\s[0]* (That's not a valid day. Try again.)"
+		--
+		"\![open,inputbox,OnUserBornDay,-1]\e"
+	}	
+}
+
+//--birthchecked
+//This is the new envelope you saw me point out above.
+
+birthchecked
+{
+	if userbirthday == dayslot //if today is the user's birthday
+		{
+			"\0\s[0]* (It seems today is your birthday.)\e"
+		}
+	else //if the birthday is not listed above.
+		{
+			"\0\s[0]* (Your birthday is %(bornmonthprint) %(borndayprint).)\e"
+		}
+}
+
+//--Talk Rate
+//This is when the user chooses to adjust the talk rate in the config menu. The talk rate is how often the ghost will read some dialogue from aitalk.dic.
+
+Select.talkinter
+ 	{
+ 		"\0\s[0]\b2How often should we speak?\w8\1\s[10]The interval is currently set to %(talktime)./
+		//note the new envelope here for %(talktime). You'll see it again in a second. You can replace the dialogue above with whatever you like, just make sure it ends with ./ and not \e.
+ 		\0\n\n[half]/
+ 		\![*]\q[Every 30 seconds,TALKMAX]\n/
+		\![*]\q[Every minute,TALKHIGH]\n/
+ 		\![*]\q[Every 3 minutes,TALKNORMAL]\n/
+		\![*]\q[Every 5 minutes,TALKPOOR]\n/
+ 		\![*]\q[Don't speak,TALKNONE]\n\n[half]/
+		\![*]\q[Don't change,TalksTill]\e"
+	}
+
+//If the user doesn't want to change the rate.
+Select.TalksTill
+	{
+		"\0\s[0]No change to the talk rate.\e"
+	}
+
+//If the user chooses every 30 seconds.
+Select.TALKMAX
+	{
+ 		talktime = "30 seconds" //this sets up the envelope properly
+		aitalkinterval = 30 //this changes the actual rate
+		
+ 		"\0\s[0]We will speak every 30 seconds.\e"
+	}
+
+//If the user chooses every minute.
+Select.TALKHIGH
+	{
+ 		talktime = "minute"
+		aitalkinterval = 60
+		
+ 		"\0\s[0]We will speak every minute.\e"
+	}
+
+//If the user chooses every three minutes.
+Select.TALKNORMAL
+	{
+ 		talktime = "3 minutes"
+		aitalkinterval = 180
+		
+ 		"\0\s[0]We will speak every three minutes.\e"
+	}
+
+//If the user chooses every five minutes. This is the default rate the ghost will start up in, as seen in bootend.dic.
+Select.TALKPOOR
+	{
+ 		talktime = "5 minutes"
+		aitalkinterval = 300
+		
+ 		"\1\s[10]We will speak every five minutes.\e"
+	}
+
+//If the user chooses to not have them speak.
+Select.TALKNONE
+	{
+ 		talktime = "...actually we won't talk at all"
+		aitalkinterval = 0
+		
+		"\0\s[0]We will not speak.\e"
+	}
+
+	
+//This is when the user chooses to change their name. It's linked to the functions outlined in nameteach.dic.
+Select.TEACHNAME
+	{
+		OnTeachName	
+	}
+
+	
+//If the user selects cancel in a menu.
+Select.CANCEL
+	{
+		""
+ 	}
+
+	
+//Going back to the MenuRun function we finished above, this is if someone selects the Functions option, linked to dosomething. As you can see, it ends up as Select.dosomething.
+
+Select.dosomething
+{
+ 		"\0\s[0]\b2This is the first function menu intro.\n\n"
+ 		"\0\s[0]\b2This is the second function menu intro.\n\n"
+		"\0\s[0]\b2This is the third function menu intro.\n\n"
+		--
+ 		"\![*]\q[Open Calendar,CALENDAR]\n/
+		\![*]\q[Check Email,MailCheck]\n/
+		\![*]\q[Open SSP Preferences,sspconfig]\n/
+		\![*]\q[Empty Recycle Bin,ChoiceGarbagecan]\n/
+		\![*]\q[System Information,ChoiceSystemInformation]\n\n/
+ 		\![*]\q[Back to main menu,BACKTOMENU]\e"
+}
+
+//When the user clicks Open Calender. This will open the calender function of SSP, an in-built feature that you don't have to worry about in the least.
+Select.CALENDAR
+{
+	"\0\s[0]Opening the calender.\w8\![open,calendar]\e"
+}
+
+//When the user chooses SSP preferences. This will open the same window that shows up if you right click your ghost and go to Utilities - Preferences.
+Select.sspconfig
+{
+	"\0\s[0]Opening the SSP config menu.\w8\![open,configurationdialog]\e"
+}
+
+//If the user chooses to empty the recycle bin.
+Select.ChoiceGarbagecan
+{
+	_gomicheck = FUNCTIONEX("gomi.dll", "-n")	//for those curious, it's referencing a SAORI, which are optional user-made plug-in dlls you can download to enable different functions on your ghost. gomi.dll is one included with this template.
+	
+	if _gomicheck == 0 //If the recycle bin is empty.
+	{
+		"\0\s[0]Triangle, go check the recycle bin.\w8\1\s[19]Fine.\w8\w8\s[-1]\w8\w8\w8\w8\w8\1\s[10]\cIt was empty.\e"
+	}
+	elseif _gomicheck >= 1 //If the recycle bin is full.
+	{
+		"\0\s[0]Emptying the recycle bin.\w8\1\s[19]I'm going.\w8\w8\s[-1]\w8\w8\w8\w8\w8\![raise,OnGarbagecanEmpty]\w9\w9\w9\1\s[10]\cDone.\e"
+		
+		"\0\s[0]This is the second recycle bin emptying dialogue.\w8\1\s[19]I'm going.\w8\w8\s[-1]\w8\w8\w8\w8\w8\![raise,OnGarbagecanEmpty]\w9\w9\w9\1\s[10]\cDone.\e"
+		
+		//Somewhat similar to the above, but notice the \![raise],OnGarbagecanEmpty] tag in there. That's what actually empties the recycle bin, so make sure you don't delete that tag.
+	}
+}
+
+
+//This is for the SAORI, don't touch it.
+OnGarbagecanEmpty
+{
+	_gomi = FUNCTIONEX("gomi.dll", "-f")
+}
+
+//This is when the user chooses System Information. Don't touch any of this either. For those curious though, note that this is done using another SAORI, this time saori_cpuid.dll.
+Select.ChoiceSystemInformation
+{
+	os_name = FUNCTIONEX("saori_cpuid.dll","os.name")
+	os_version = FUNCTIONEX("saori_cpuid.dll","os.version")
+	cpu_name = FUNCTIONEX("saori_cpuid.dll","cpu.name")
+	cpu_clockex = FUNCTIONEX("saori_cpuid.dll","cpu.clockex")
+	"/
+	\0\s[0]\b[2]/
+	\_q\f[bold,1]OS:\f[bold,0] %(os_name) %(os_version)\n/
+	\f[bold,1]Memory Load:\f[bold,0] %(memoryload)%\n/
+	\f[bold,1]Physical Memory:\f[bold,0] %(memoryavailphys) KB\n/
+	\f[bold,1]CPU:\f[bold,0] %(cpu_name) %(cpu_clockex)MHz\n/
+	\f[bold,1]Ukagaka:\f[bold,0] %property[baseware.version]/
+	\e"
+}
+	
+//This is when the user chooses to check their email. The rest of this function plays out in etc.dic.
+Select.MailCheck
+	{
+		"\![biff]\e"
+	}
+
+
+	
+//---- OnChoiceTimeout ---------------------------------------------------------
+//If the user is given a menu with choices, but doesn't pick one of the choices, it will eventually time out.
+
+OnChoiceTimeout
+ {
+	""
+ }
+
+ 
+//---- Secondary Character Menu ---------------------------------------------------------
+//This section has to do with the menu for the second character.
+
+OpenKeroMenu
+ {
+	"\_q\1\s[10]\b[2]"
+ 	--
+	"* (The backpack has a nametag with your name on it. %(username).)"
+	--
+	//"\nDev peepoo: \![*]\q[Set To 0,setto0]"
+ 	--
+	"\n\n"
+	--
+	if bought11 == 0 && bought12 == 0 && bought13 == 0 && bought14 == 0 && bought15 == 0 && bought21 == 0 && bought22 == 0 && bought23 == 0 && bought24 == 0 && bought25 == 0 && bought31 == 0 && bought32 == 0 && bought33 == 0 && bought34 == 0 && bought35 == 0 && bought41 == 0 && bought42 == 0 && bought43 == 0 && bought44 == 0 && bought45 == 0 && bought51 == 0 && bought52 == 0 && bought53 == 0 && bought54 == 0 && bought55 == 0
+	{
+	"* (You have no items in your backpack.)"
+	}
+	else
+	{
+		if bought11 > 0
+		{
+			"You have %(bought11) \q['Wacky Wafers',eat11].\n"
+		}
+		--
+		if bought12 > 0
+		{
+			"You have %(bought12) \q['Munchy Bloomers',eat12].\n"
+		}
+		--
+		if bought13 > 0
+		{
+			"You have %(bought13) \q['Prawn Crackers',eat13].\n"
+		}
+		--
+		if bought14 > 0
+		{
+			"You have %(bought14) \q['Cheesy Chunks',eat14].\n"
+		}
+		--
+		if bought15 > 0
+		{
+			"You have %(bought15) \q['Mixed Nuts',eat15].\n"
+		}
+		--
+		if bought21 > 0
+		{
+			"You have %(bought21) \q['Green Devils',eat21].\n"
+		}
+		--
+		if bought22 > 0
+		{
+			"You have %(bought22) \q['Assorted Dried Fruits',eat22].\n"
+		}
+		--
+		if bought23 > 0
+		{
+			"You have %(bought23) \q['Flaming Hot Sunrise',eat23].\n"
+		}
+		--
+		if bought24 > 0
+		{
+			"You have %(bought24) \q['Blueberry Buzzers',eat24].\n"
+		}
+		--
+		if bought25 > 0
+		{
+			"You have %(bought25) \q['Almond Fluffs',eat25].\n"
+		}
+		--
+		if bought31 > 0
+		{
+			"You have %(bought31) \q['Forest Crunch',eat31].\n"
+		}
+		--
+		if bought32 > 0
+		{
+			"You have %(bought32) \q['Apple Arrows',eat32].\n"
+		}
+		--
+		if bought33 > 0
+		{
+			"You have %(bought33) \q['Lemonade Joy',eat33].\n"
+		}
+		--
+		if bought34 > 0
+		{
+			"You have %(bought34) \q['Cheeky Chucklers',eat34].\n"
+		}
+		--
+		if bought35 > 0
+		{
+			"You have %(bought35) \q['Green Apple Jabbers',eat35].\n"
+		}
+		--
+		if bought41 > 0
+		{
+			"You have %(bought41) \q['Red Hot Dream',eat41].\n"
+		}
+		--
+		if bought42 > 0
+		{
+			"You have %(bought42) \q['Temperature Tantrum',eat42].\n"
+		}
+		--
+		if bought43 > 0
+		{
+			"You have %(bought43) \q['Tropical Thrill',eat43].\n"
+		}
+		--
+		if bought44 > 0
+		{
+			"You have %(bought44) \q['Cream 'n' Coconut',eat44].\n"
+		}
+		--
+		if bought45 > 0
+		{
+			"You have %(bought45) \q['Razzberry Whip',eat45].\n"
+		}
+		--
+		if bought51 > 0
+		{
+			"You have %(bought51) \q['Vanilla Blast',eat51].\n"
+		}
+		--
+		if bought52 > 0
+		{
+			"You have %(bought52) \q['Cherry Surge',eat52].\n"
+		}
+		--
+		if bought53 > 0
+		{
+			"You have %(bought53) \q['Grape Tornado',eat53].\n"
+		}
+		--
+		if bought54 > 0
+		{
+			"You have %(bought54) \q['Golden Guzzler',eat54].\n"
+		}
+		--
+		if bought55 > 0
+		{
+			"You have %(bought55) \q['Blueberry Bash',eat55].\n"
+		}
+	}
+	--
+	"\n\n\![*]\q[Close,keroCANCEL]"
+}
+
+Select.eat11
+{
+	tempeat = "Wacky Wafers"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat12
+{
+	tempeat = "Munchy Bloomers"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat13
+{
+	tempeat = "Prawn Crackers"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat14
+{
+	tempeat = "Cheesy Chunks"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat15
+{
+	tempeat = "Mixed Nuts"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat21
+{
+	tempeat = "Green Devils"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat22
+{
+	tempeat = "Assorted Dried Fruits"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat23
+{
+	tempeat = "Flaming Hot Sunrise"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat24
+{
+	tempeat = "Blueberry Buzzers"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat25
+{
+	tempeat = "Almond Fluffs"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat31
+{
+	tempeat = "Forest Crunch"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat32
+{
+	tempeat = "Apple Arrows"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat33
+{
+	tempeat = "Lemonade Joy"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat34
+{
+	tempeat = "Cheeky Chuckler"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat35
+{
+	tempeat = "Green Apple Jabbers"
+	snacktype = "eat"
+	--
+	OnWantToEat
+}
+
+Select.eat41
+{
+	tempeat = "Red Hot Dream"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat42
+{
+	tempeat = "Temperature Tantrum"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat43
+{
+	tempeat = "Tropical Thrill"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat44
+{
+	tempeat = "Cream 'n' Coconut"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat45
+{
+	tempeat = "Razzberry Whip"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat51
+{
+	tempeat = "Vanilla Blast"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat52
+{
+	tempeat = "Cherry Surge"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat53
+{
+	tempeat = "Grape Tornado"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat54
+{
+	tempeat = "Golden Guzzler"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+Select.eat55
+{
+	tempeat = "Blueberry Bash"
+	snacktype = "drink"
+	--
+	OnWantToEat
+}
+
+OnWantToEat
+{
+	"\1* (Would you like to %(snacktype) the '%(tempeat)')\n/
+	\![*]\q[Yes,yeseat]\n/
+	\![*]\q[No,eatcancel]\n"
+}
+
+Select.yeseat
+{
+	"\1* (You %(snacktype) the '%(tempeat)'.)"
+	--
+	if tempeat == "Wacky Wafers"
+	{
+		bought11 -= 1
+	}
+	elseif tempeat == "Munchy Bloomers"
+	{
+		bought12 -= 1
+	}
+	elseif tempeat == "Prawn Crackers"
+	{
+		bought13 -= 1
+	}
+	elseif tempeat == "Cheesy Chunks"
+	{
+		bought14 -= 1
+	}
+	elseif tempeat == "Mixed Nuts"
+	{
+		bought15 -= 1
+	}
+	
+	elseif tempeat == "Green Devils"
+	{
+		bought21 -= 1
+	}
+	elseif tempeat == "Assorted Dried Fruits"
+	{
+		bought22 -= 1
+	}
+	elseif tempeat == "Flaming Hot Sunrise"
+	{
+		bought23 -= 1
+	}
+	elseif tempeat == "Blueberry Buzzers"
+	{
+		bought24 -= 1
+	}
+	elseif tempeat == "Almond Fluffs"
+	{
+		bought25 -= 1
+	}
+	
+	elseif tempeat == "Forest Crunch"
+	{
+		bought31 -= 1
+	}
+	elseif tempeat == "Apple Arrows"
+	{
+		bought32 -= 1
+	}
+	elseif tempeat == "Lemonade Joy"
+	{
+		bought33 -= 1
+	}
+	elseif tempeat == "Cheeky Chuckler"
+	{
+		bought34 -= 1
+	}
+	elseif tempeat == "Green Apple Jabbers"
+	{
+		bought35 -= 1
+	}
+	
+	elseif tempeat == "Red Hot Dream"
+	{
+		bought41 -= 1
+	}
+	elseif tempeat == "Temperature Tantrum"
+	{
+		bought42 -= 1
+	}
+	elseif tempeat == "Tropical Thrill"
+	{
+		bought43 -= 1
+	}
+	elseif tempeat == "Cream 'n' Coconut"
+	{
+		bought44 -= 1
+	}
+	elseif tempeat == "Razzberry Whip"
+	{
+		bought45 -= 1
+	}
+	
+	elseif tempeat == "Vanilla Blast"
+	{
+		bought51 -= 1
+	}
+	elseif tempeat == "Cherry Surge"
+	{
+		bought42-= 1
+	}
+	elseif tempeat == "Grape Tornado"
+	{
+		bought53 -= 1
+	}
+	elseif tempeat == "Golden Guzzler"
+	{
+		bought54 -= 1
+	}
+	elseif tempeat == "Blueberry Bash"
+	{
+		bought55 -= 1
+	}
+	--
+	tempeat = "none"
+	snacktype = "none"
+}
+
+Select.setto0
+{
+	bought11 = 0
+	bought12 = 0
+	bought13 = 0
+	bought14 = 0
+	bought15 = 0
+	
+	bought21 = 0
+	bought22 = 0
+	bought23 = 0
+	bought24 = 0
+	bought25 = 0
+	
+	bought31 = 0
+	bought32 = 0
+	bought33 = 0
+	bought34 = 0
+	bought35 = 0
+	
+	bought41 = 0
+	bought42 = 0
+	bought43 = 0
+	bought44 = 0
+	bought45 = 0
+	
+	bought51 = 0
+	bought52 = 0
+	bought53 = 0
+	bought54 = 0
+	bought55 = 0
+	--
+	OpenKeroMenu
+}
+
+//If you click cancel.
+Select.keroCANCEL
+{
+}
+
+Select.eatcancel
+{
+	tempeat = "none"
+	snacktype = "none"
+}
+
+//This is when they select bug report. This is mostly meant to briefly give the user information about you, the creator, and how to report a problem to you. This can be handy if the person forgot where they got their ghost or how to contact you. Add whatever info you like here.
+Select.bugreport
+{
+"\1\s[10]This is the bug report dialogue. \w5Report bugs to youremailaddress@emailprovider.com. \w5We were downloaded from \_a[http://www.whereveryoupostedthem.com/]some place\_a.\e"
+}
+
+//When clicked, this will automatically tell the ghost to check for updates. More detail on updates in etc.dic.
+Select.keroupdatecheck
+{
+	"\1\s[10]\![updatebymyself]\e"
+}
+
+//--Test Variable --------------------------------------------------------
+//You can also use this to test functions as I mentioned above by adding \![raise,function] at the end of it, although you can do this with Script Input as well.
+
+//It is ALWAYS A GOOD IDEA to test your dialogue! If you won't check it with the test variable, at least test it with Script Input! It'll save you so much trouble!
+
+Select.testvariable
+{
+	"\1\s[10]Testing!\e"
+}

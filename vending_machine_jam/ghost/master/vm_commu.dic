@@ -1,0 +1,93 @@
+//---------------------------Communication--------------------------
+
+//Some ghosts have a feature where they will speak to your ghost, usually saying "hello" or "hi" or something like that. This file mostly handles how your ghost will reply when another ghost talks to them like that.
+
+
+//--OnCommunicate
+
+//OnCommunicate is called when your ghost is either targeted by another ghost for a conversation, or when your ghost is targeting another ghost for conversation. There's no need to touch any of this.
+OnCommunicate
+ {
+	if reference0 == "user" || reference0 == "User"
+ 	{
+		//---- answering the user
+ 		ReplyToUser
+	}
+ 	else
+	{
+ 		//---- answering another ghost
+		ReplyToGhost
+ 	}
+}
+
+//Just ignore this.
+ReplyToUser
+{
+	TalkToUser
+}
+
+//--ReplyToGhost
+
+//Here is where you get to write your dialogue. This will be what your ghost will say when another ghost tries to speak to them.
+
+//*********************Advanced User Info*******************************
+//There are a few different ways you can refine this dialogue, depending on what ghost is speaking to yours and what they're saying. The things you can check for are reference0 and reference1, being the ghost's sakuraname (in their descript.txt) and what they're saying. For example, let's say you want to check if my Gaster ghost is speaking to yours. In that case, you'd set it up like...
+
+
+//You can also specify it even further by looking in that ghost's dialogue with nested ifs. As an example...
+
+/*
+ReplyToGhost
+{
+	if reference0 == "Gaster"
+	{
+		res_reference0 = "Gaster" 
+		
+		if reference1 == "I'm a skeleton."
+		{
+			"\0\s[0]You sure are.\e"
+		}
+		else
+		{
+			"\0\s[0]Hello, Gaster.\e"
+		}
+	}
+	else
+	{
+		res_reference0 = reference0
+		{
+		"\0\s[0]Hello, %(res_reference0).\w8\1\s[10]Hope you're doing well.\e"
+		
+		"\1\s[10]Hey, %(res_reference0).\e"
+		}
+	}
+}*/
+
+//***********************************************************************
+
+//Now, real quick, there is a chance that your ghost could get stuck in a loop of saying hi to the other ghost unless you take a few precautions. Mostly, setting a little flag to make sure your ghost won't get stuck. I'll add it in here just in case, so you won't have to worry about that.
+
+// ReplyToGhost
+// {
+       // if AlreadyResponded == 1 //checking the status of the flag
+       // {
+		
+             // AlreadyResponded = 0 //Resetting the flag.
+
+             // res_reference0 = "" //this will clear the value so the conversation will end
+
+             // "Yeah okay."
+       // }
+       // else
+       // {
+             // res_reference0 = reference0 //targeting the other ghost.
+			 
+             // AlreadyResponded = 1 //setting a flag to say they've responded once already
+
+             // {
+             // "\0\s[0]Hello, %(res_reference0).\w8\1\s[10]Hope you're doing well.\e"
+
+             // "\1\s[10]Hey, %(res_reference0).\e"
+             // }
+       // }
+// }

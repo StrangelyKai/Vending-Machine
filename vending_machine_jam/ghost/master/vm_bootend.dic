@@ -1,0 +1,343 @@
+﻿//---------------------------Booting and Ending--------------------------
+
+//This .dic file is set aside for booting and ending dialogue, as well as a few other functions.
+
+/* This file has:
+OnFirstBoot
+NameInput
+First pronoun stuff
+GetDaySlot/GetTimeSlot
+OnBoot
+normalboottalk
+OnClose
+OnWindowStateRestore
+OnGhostChanging
+OnGhostChanged
+OnShellChanging
+OnShellChanged
+OnDressupChanged
+*/
+
+
+//--OnFirstBoot--
+
+//*********************Advanced User Info*******************************
+//Because this only runs once and under an odd set of circumstances, it can be hard to test if this function is working properly. Trying to run the entire function using \![raise,OnFirstBoot] will instead bring up your alternate dialogue, so sadly you can't check it that way. You CAN get it to run using \![raise,OnFirstBoot,0] though.
+//***********************************************************************
+
+
+OnFirstBoot
+{
+//OnFirstBoot begins with some code at first to define some values your ghost will be using.
+
+ 	lastTalk = "" //This is part of how chained conversations work (see aitalk.dic).
+	passhour = 0
+	passmin = 0 
+	passsec = 0 // These keep track of the time.
+ 	username         = "USER" //This sets a temporary name for the user. It'll be replaced when they tell the ghost their name.
+	stroke           = 0	// Sets their being-pet state to zero.
+ 	teachusername    = 0	// Related to them learning your name.
+	mikireflag       = 0	// Determines behavior at certain points.
+ 	aitalkinterval = 300 //Their default talk rate.
+ 	birthdayprint = "????" //A temporary value for the user's birthday.
+	talktime = "5 minutes" //How the value aitalkinterval will display in the config menu.
+	deleteshitai = "OFF" //Sets whether or not the user can uninstall the ghost to "OFF". The user can change it later in the config menu (see menu.dic). 
+	nowshell = "master" //This is for a special if check in aitalk.dic to see what shell the ghost is using. You should use the name of your default shell folder here.
+	firstboot = 1 //This marks that this is the first time you've run the ghost. It's so it won't reroute to general name changing dialogue when the user inputs their name.
+	tempbought = 0
+	
+	bought11 = 0
+	bought12 = 0
+	bought13 = 0
+	bought14 = 0
+	bought15 = 0
+	
+	bought21 = 0
+	bought22 = 0
+	bought23 = 0
+	bought24 = 0
+	bought25 = 0
+	
+	bought31 = 0
+	bought32 = 0
+	bought33 = 0
+	bought34 = 0
+	bought35 = 0
+	
+	bought41 = 0
+	bought42 = 0
+	bought43 = 0
+	bought44 = 0
+	bought45 = 0
+	
+	bought51 = 0
+	bought52 = 0
+	bought53 = 0
+	bought54 = 0
+	bought55 = 0
+	
+	if reference0 == 0 
+ 	{
+		//Unlike most dialogue, it should start with "\![enter,passivemode]". Passivemode basically ensures that the balloons won't disappear, the choices won't time out, the ghosts won't talk randomly, you can't bring up menus, and makes sure that this dialogue plays through to the end correctly.
+		
+		"\![enter,passivemode]\1\s[10]\0\s[0]* (The vending machine rumbles and then you hear a hum of electricity.)\x\c* (What pronouns do you use, consumer?)\n\n[half]/
+		\w5\_q\![*]\q[He/Him/His,choicefirsthehim]\n/
+		\![*]\q[She/Her/Hers,choicefirstsheher]\n/
+		\![*]\q[They/Them/Their,choicefirsttheythem]\e"
+		
+		//Make sure to set up poses for both characters right when you start, otherwise one will be invisible until they speak.
+		//Note also the use of the \x and \c tags.
+ 	}
+	else
+ 	{
+		//---- This is dialogue for when the user uninstalls the ghost for whatever reason, then reinstalls them again. They will run this dialogue instead of their normal dialogue above. You'll see this if you try to run OnFirstBoot using ![raise] without the extra 0 as mentioned above.
+ 		{
+ 		"\1\s[10]\0\s[0]* (Seems you uninstalled and reinstalled the vending machine.)\e"
+		}
+ 	}
+}
+
+//Below are the choices that were defined at the end of the OnFirstBoot dialogue up there. These define the values your ghost will be using for pronouns according to what the user selected.
+
+Select.choicefirsthehim
+{
+	presuffix = "masculine"
+	himher = "him"
+	heshe = "he"
+	hisher = "his"
+	hesshes = "he's"
+	--
+	NameInput
+}
+
+Select.choicefirstsheher
+{
+	presuffix = "feminine"
+	himher = "her"
+	heshe = "she"
+	hisher = "her"
+	hesshes = "she's"
+	--
+	NameInput
+}
+
+Select.choicefirsttheythem
+{
+	himher = "them"
+	heshe = "they"
+	hisher = "theirs"
+	hesshes = "they're"
+	--
+	NameInput
+}
+
+
+//--NameInput
+
+//NameInput is the next step in our introduction sequence. Now that the ghost has the pronouns set properly, they can ask the user for their name. It's done in this order so they'll know what prefixes will be appropriate for their name, like Mr. to he/him for example.
+
+NameInput
+{
+	//Note that there's a \![leave,passivemode] tag in this dialogue! Don't forget about this!
+	
+	"\0\s[0]\![leave,passivemode]* (And your name?) \![open,inputbox,OnNameTeach,-1]\e"
+	
+	//At the end of this dialogue there's a tag saying "\![open,inputbox,OnNameTeach,-1]". It basically leads to the naming function defined in nameteach.dic, so don't touch it. Make sure it's there though! Otherwise your user won't have a way to put in their name. :o
+	
+	//*********************Advanced User Info*******************************
+	//What this tag basically means is that you're calling a function at the end of the dialogue with the \! tag, you are telling it to open, you're telling it to open an inputbox, and you're telling that inputbox to link to a function called OnNameTeach, which is in the nameteach.dic file.
+	//The -1 at the end determines how long the box will be open until it times out. -1 means it shouldn't time out at all, I think.
+	//***********************************************************************
+}
+
+//--timeslot
+
+//This is another unique function to tell what time of day it is. This is used for specialized dialogue related to the day.
+
+timeslot
+{
+	if hour >= 5 && hour <= 8
+	{	"earlymorning"	}
+	elseif hour >= 9 && hour <= 11
+	{	"morning"	}
+	elseif hour >= 12 && hour <= 14
+	{	"lunch"	}
+	elseif hour >= 15 && hour <= 17
+	{	"afternoon"	}
+	elseif hour >= 18 && hour <= 20
+	{	"evening"	}
+	elseif hour >= 21 && hour <= 24
+	{ "latenight"	}
+	else
+	{ "midnight" }
+}
+
+//--dayslot
+
+//Like the above, but to find out what day it is. You can primarily use this for specialized dialogue on certain days, like the user's birthday.
+dayslot
+{
+	"%(month)month %(day)day"
+}
+
+
+//-----------------------Normal Booting----------------------------
+
+//From this point on, the dialogue will be for any normal boot of your ghost. You can specialize this for certain days or times if you like, or if you're uninterested, leave it very simple.
+
+
+//--OnBoot
+
+//As you can probably guess, OnBoot runs when you boot your ghost.
+//*********************Advanced User Info*******************************
+//You can also stick any values you want to reset on boot into their own function, like "BootReset", then run BootReset instead during boot so it's a bit less unwieldy.
+//***********************************************************************
+
+OnBoot
+ {
+	lastTalk = "" 
+	passhour = 0
+	passmin = 0
+	passsec = 0
+	tempbought = 0
+	
+ 	"\0\s[0]\1\s[10]" //This sets them up in their neutral pose for now.	
+	--
+	
+	if dayslot == userbirthday 	
+	{
+				"\0\s[0]* (Happy birthday, %(username).)\e" 
+				
+				//Notice in this dialogue that there are two new envelopes, %(bornmonthprint) and %(borndayprint). These two things basically display the user's birthday - bornmonthprint is the month and borndayprint is the day.
+	}
+	else
+	{
+		"%(normalboottalk)" //If none of the days above match the current date, the ghost instead will go down to the next function, normalboottalk.
+	}
+}
+
+
+//--normalboottalk
+
+//normalboottalk will vary their dialogue in a few different ways depending on the time and weekday.
+
+normalboottalk
+{
+	"\0\s[0]* (You hear a hum of electricity as the vending machine starts up.)"
+}
+
+
+//--OnClose
+
+//OnClose runs when you close your ghost. Like OnBoot, this can be customized for times and days if you like, as you saw above. It can also be easily simplified down to. Although do note, close dialogue must end with a \- instead of \e. \- will close the program.
+//Note though that each bit here ends with \w8 instead of \e. That's because the actual end statement to close the ghost is at the very end, one of the very very rare times you won't have to end a line with \e. Instead, end it with \w8 so there's a little bit of a pause for the user before your ghost closes so they can read the last message.
+
+OnClose
+ {
+	""
+ 	--
+	"\-\e" //this bit of code actually closes and ends the ghost. Because \e is here, you don't have to end each line above with it.
+ }
+
+
+ //-------------------------State Changing--------------------
+ //From here on, most of the dialogue will have to do with changing shells, ghosts, or states in some way.
+ 
+ 
+ //--OnWindowStateMinimize
+
+//This will run when you minimize them.
+
+ OnWindowStateMinimize
+ {
+	"\0\s[0]* (The vending machine will now be minimised.)\w4\e"
+}
+
+//--OnWindowStateRestore
+
+//This will run when they come back up.
+
+OnWindowStateRestore
+ {
+	"\0\s[0]* (The vending machine has now been restored.)\e"
+}
+
+
+//--OnGhostChanging
+
+OnGhostChanging
+ {
+	if reference0 == "Vending Machine" //Replace this with the name of your Sakura character as you put in install.txt or descript.txt.
+	{
+		""
+	}
+ 	else //If you're switching to another Ghost.
+	{
+		"\0\s[0]\w8\e"
+		
+		//In OnGhostChanging, %(reference0) stores the name of the ghost being swapped to, so if you want to display what you're switching to, you can use %(reference0) as in this example.
+	}
+}
+
+
+//--OnGhostChanged
+
+//A sister to the above, this runs after the ghost has either reloaded itself, or when you switch from another ghost to this ghost.
+
+OnGhostChanged
+{
+	"\0\s[0]\1\s[10]" //this sets up their default poses
+	--
+	if reference0 == "Vending Machine" //As above, this should be the name of your ghost as in install.txt or descript.txt.
+	{
+		""
+	}
+	else
+	{
+		"\0\s[0]* (You hear a hum of electricity as the vending machine starts up.)"
+
+		//Again, %(reference0) in this function is the name of the ghost in question.
+	}
+}
+
+
+//--OnShellChanging
+
+//This will run when you change your ghost's shell.
+
+OnShellChanging
+ {
+	if reference0 == "Hypothetical Shell that doesn't actually exist" //reference0 in OnShellChanging is the name of the shell you're swapping to. It should be defined in the descript.txt file in your shell folder. If you do have alternate shells, put in the right name here.
+	{
+	""
+	}
+	else //if you don't have any specific dialogue for a specific shell
+	{
+	""
+	
+	""
+	}
+ }
+ 
+ 
+ //--OnShellChanged
+ 
+ //The sister to the above, this is the dialogue after you've changed the shell.
+
+OnShellChanged
+ {
+ 	if reference0 == "Vending Machine" //Again, this is the name of your shell as you put in the descript.txt file for that shell.
+ 	{
+ 		nowshell = "master" //This is the folder name for your shell. Not the same as the above! 
+		
+ 		""
+ 	}
+ 	else //For any shell without a specific name, or if you don't want to bother with individual responses to a shell.
+ 	{
+	""
+	
+	//Note the %(reference[0]) here! This time that should store the name of whatever shell you're switching to.
+	}
+ }
+
+
