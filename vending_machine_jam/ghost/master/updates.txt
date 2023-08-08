@@ -21,7 +21,7 @@ file,ghost/master/vm_etc.dic483e9008c3d0b5e13d216430da3aa2d3size=13094date=20
 file,ghost/master/vm_menu.dic2fdc8f27935676c1e527c3631f0c6f7fsize=24166date=2022-05-12T15:07:58
 file,ghost/master/vm_mouse.dic18bf0ac7f9cc26b7975c1b503476e78esize=9829date=2022-05-07T18:38:07
 file,ghost/master/vm_nameteach.dice98f166e3e92988a5f8c19988cd1cfc4size=2266date=2022-05-07T05:04:38
-file,ghost/master/vm_string.dic7b6d1d67f6b3fada539acbcbeb182fc8size=6838date=2022-08-23T23:29:44
+file,ghost/master/vm_string.dic64f1fb5d3afb2a92455a194681a7e2dcsize=6750date=2023-08-08T23:04:27
 file,ghost/master/vm_word.dicd02519de3ec3fbe5fa61faa8cbae1bb7size=3475date=2022-05-16T14:33:17
 file,ghost/master/yaya.dllb7a07af9018500934f69a0335568242dsize=761856date=2021-12-08T22:30:46
 file,ghost/master/yaya.txte92e93b754869df024a889726d28ad09size=1519date=2022-05-06T15:14:58
